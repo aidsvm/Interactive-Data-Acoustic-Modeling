@@ -32,7 +32,7 @@ class GUI:
 
     def load_sample(self):
         # Open file dialog for selecting audio file
-        file_path = filedialog.askopenfilename(title="Select Audio File", filetypes=[("Audio Files", "*.wav;*.mp3")])
+        file_path = filedialog.askopenfilename(title="Select Audio File", filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
 
         if file_path:
             # Checks if the file type is mp3
@@ -40,6 +40,7 @@ class GUI:
                 # Converts the file to wav
                 src = file_path
                 dst = os.path.splitext(file_path)[0] + '.wav'
+                print("Converting...")
 
                 sound = AudioSegment.from_mp3(src)
                 sound.export(dst, format="wav")
