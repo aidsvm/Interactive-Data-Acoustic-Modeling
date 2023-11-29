@@ -1,3 +1,8 @@
+"""
+This file was split up into 3 separate .py's
+It is no longer in use
+Just here as a reference
+"""
 import os
 from pydub import AudioSegment
 import tkinter as tk
@@ -36,7 +41,7 @@ class GUI:
 
         if file_path:
             # Checks if the file type is mp3
-            if os.path.splitext(file_path)[1].lower() == '.mp3':
+            if not os.path.splitext(file_path)[1].lower() == 'wav':
                 # Converts the file to wav
                 src = file_path
                 dst = os.path.splitext(file_path)[0] + '.wav'
