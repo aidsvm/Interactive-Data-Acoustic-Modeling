@@ -10,6 +10,7 @@ class View(ttk.Frame):
 
         # Create and place widgets
         # Load Button
+
         self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
         self.load_button.pack(pady=10)
 
@@ -25,12 +26,18 @@ class View(ttk.Frame):
         self.waveform_canvas = tk.Canvas(self, width=400, height=200)
         self.waveform_canvas.pack(pady=10)
 
+        self.time_label = tk.Label(self, text="Time: ")
+        self.time_label.pack(pady=5)
+
         # Additional Plots
         self.additional_canvas = tk.Canvas(self, width=400, height=200)
         self.additional_canvas.pack(pady=10)
 
         # set the controller
         self.controller = None
+
+    def display_time(self, time):
+        self.time_label.config(text=f"Time: {time:.2f} seconds")
 
     def set_controller(self, controller):
         self.controller = controller
@@ -61,7 +68,7 @@ class View(ttk.Frame):
 
     def update_additional_plot(self, additional_data):
         # Update Additional Plot
-        self.plot_additional(additional_data, self.additional_canvas)
+        self.plot_additional()
 
     def plot_waveform(self, data, canvas):
         canvas.delete("all")
