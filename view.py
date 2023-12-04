@@ -10,7 +10,7 @@ class View(ttk.Frame):
 
         # Create and place widgets
         # Load Button
-        self.load_button = tk.Button(self, text="Load Audio", command=self.load_sample)
+        self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
         self.load_button.pack(pady=10)
 
         # Filename Label
@@ -33,21 +33,19 @@ class View(ttk.Frame):
         self.controller = None
 
     def set_controller(self, controller):
-        """
-        Set the controller
-        :param controller:
-        :return:
-        """
         self.controller = controller
 
-    def load_sample(self):
+    def load_audio(self):
         # Open file dialog for selecting audio file
         file_path = filedialog.askopenfilename(title="Select Audio File",
                                                filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
 
+        print(f"Selected file: {file_path}")  # Add this print statement
+
         if file_path:
+            print("Calling controller.load_audio")  # Add this print statement
             # Notify the Controller about the user's action
-            self.controller.load_sample(file_path)
+            self.controller.load_audio(file_path)
 
     def update_filename_label(self, filename):
         # Update Filename Label
