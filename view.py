@@ -10,34 +10,30 @@ class View(ttk.Frame):
 
         # Create and place widgets
         # Load Button
-
         self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
-        self.load_button.pack(pady=10)
+        self.load_button.grid(row=1, column=1, pady=10)
 
         # Filename Label
-        self.filename_label = tk.Label(self, text="File: No file selected")
-        self.filename_label.pack(pady=5)
+        self.filename_label = tk.Label(self, text="")
+        self.filename_label.grid(row=2, column=1)
 
         # Display RT60
-        self.rt60_label = tk.Label(self, text="RT60 Value:")
-        self.rt60_label.pack(pady=5)
+        self.rt60_label = tk.Label(self, text="")
+        self.rt60_label.grid(row=10, column=1, pady=10)
 
         # Waveform Plot
         self.waveform_canvas = tk.Canvas(self, width=400, height=200)
-        self.waveform_canvas.pack(pady=10)
+        self.waveform_canvas.grid(row=15, column=1, pady=10)
 
-        self.time_label = tk.Label(self, text="Time: ")
-        self.time_label.pack(pady=5)
+        self.time_label = tk.Label(self, text="")
+        self.time_label.grid(row=20, column=1, pady=5)
 
         # Additional Plots
         self.additional_canvas = tk.Canvas(self, width=400, height=200)
-        self.additional_canvas.pack(pady=10)
+        self.additional_canvas.grid(row=19, column=1, pady=10)
 
         # set the controller
         self.controller = None
-
-    def display_time(self, time):
-        self.time_label.config(text=f"Time: {time:.2f} seconds")
 
     def set_controller(self, controller):
         self.controller = controller
@@ -54,6 +50,9 @@ class View(ttk.Frame):
             # Notify the Controller about the user's action
             self.controller.load_audio(file_path)
 
+    def display_time_value(self, time):
+        self.time_label.config(text=f"Time: {time:.2f} seconds")
+
     def update_filename_label(self, filename):
         # Update Filename Label
         self.filename_label.config(text=f"File: {filename}")
@@ -68,7 +67,7 @@ class View(ttk.Frame):
 
     def update_additional_plot(self, additional_data):
         # Update Additional Plot
-        self.plot_additional()
+        self.plot_additional(additional_data, self.additional_canvas)
 
     def plot_waveform(self, data, canvas):
         canvas.delete("all")
