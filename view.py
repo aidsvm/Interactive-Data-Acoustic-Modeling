@@ -1,44 +1,54 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 
 
-class View:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("")
+class View(ttk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
 
         # Create and place widgets
-        self.create_widgets()
-
-    def create_widgets(self):
         # Load Button
-        self.load_button = tk.Button(self.root, text="Load Audio", command=self.load_sample)
-        self.load_button.pack(pady=10)
+        self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
+        self.load_button.grid(row=1, column=1, pady=10)
 
         # Filename Label
-        self.filename_label = tk.Label(self.root, text="File: No file selected")
-        self.filename_label.pack(pady=5)
+        self.filename_label = tk.Label(self, text="")
+        self.filename_label.grid(row=2, column=1)
 
         # Display RT60
-        self.rt60_label = tk.Label(self.root, text="RT60 Value:")
-        self.rt60_label.pack(pady=5)
+        self.rt60_label = tk.Label(self, text="RT60 Value:")
+        self.rt60_label.grid(row=10, column=1, pady=10)
 
         # Waveform Plot
-        self.waveform_canvas = tk.Canvas(self.root, width=400, height=200)
-        self.waveform_canvas.pack(pady=10)
+        self.waveform_canvas = tk.Canvas(self, width=400, height=200)
+        self.waveform_canvas.grid(row=15, column=1, pady=10)
 
         # Additional Plots
-        self.additional_canvas = tk.Canvas(self.root, width=400, height=200)
-        self.additional_canvas.pack(pady=10)
+        self.additional_canvas = tk.Canvas(self, width=400, height=200)
+        self.additional_canvas.grid(row=19, column=1, pady=10)
 
-    def load_sample(self):
+        # set the controller
+        self.controller = None
+
+    def set_controller(self, controller):
+        self.controller = controller
+
+    def load_audio(self):
         # Open file dialog for selecting audio file
-        file_path = filedialog.askopenfilename(title="Select Audio File", filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
+        file_path = filedialog.askopenfilename(title="Select Audio File",
+                                               filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
+
+        print(f"Selected file: {file_path}")  # Add this print statement
 
         if file_path:
+            print("Calling controller.load_audio")  # Add this print statement
             # Notify the Controller about the user's action
-            self.controller.load_sample(file_path)
+            self.controller.load_audio(file_path)
+
+    def display_time_value(self, time):
+        print('yay')
 
     def update_filename_label(self, filename):
         # Update Filename Label
