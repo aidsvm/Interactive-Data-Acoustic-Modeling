@@ -18,7 +18,7 @@ class View(ttk.Frame):
         self.filename_label.grid(row=2, column=1)
 
         # Display RT60
-        self.rt60_label = tk.Label(self, text="RT60 Value:")
+        self.rt60_label = tk.Label(self, text="")
         self.rt60_label.grid(row=10, column=1, pady=10)
 
         # Waveform Plot
