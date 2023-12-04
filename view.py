@@ -36,7 +36,7 @@ class View(ttk.Frame):
 
 
         self.time_label = tk.Label(self, text="")
-        self.time_label.grid(row=20, column=1, pady=5)
+        self.time_label.grid(row=18, column=1, pady=5)
 
         # Additional Plots
         self.additional_canvas = tk.Canvas(self, width=400, height=200)
