@@ -15,6 +15,8 @@ class Controller:
         time, waveform = self.model.load_audio()
 
         self.view.display_time_value(time)
+        # self.view.update_rt60_label()
+        self.view.update_waveform_plot(waveform)
 
         #self.view.update_filename_label(os.path.basename(dst))
         #self.view.update_rt60_label(sample_data['rt60'])
