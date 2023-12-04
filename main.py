@@ -11,7 +11,7 @@ class App(tk.Tk):
         self.title('S.P.I.D.A.M.')
 
         # create a model
-        model = Model()
+        model = Model(self)
 
         # create a view and place it on the root window
         view = View(self)
