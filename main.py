@@ -11,7 +11,6 @@ class App(tk.Tk):
         self.title('S.P.I.D.A.M.')
 
         # create a model
-        # Model is not yet implemented
         model = Model()
 
         # create a view and place it on the root window
@@ -24,6 +23,10 @@ class App(tk.Tk):
         # Sets the controller to a view
         view.set_controller(controller)
 
+
+if __name__ == '__main__':
+    app = App()
+    app.mainloop()
 
 """
 def openFile():

@@ -3,7 +3,7 @@ from pydub import AudioSegment
 
 
 class Controller:
-    def __init__(self, root, model, view):
+    def __init__(self, model, view):
         self.model = model
         self.view = view
 

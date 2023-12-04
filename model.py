@@ -1,7 +1,35 @@
+from tkinter import filedialog
+import soundfile as sf
+import numpy as np
+
+
+def open_file():
+    filepath = filedialog.askopenfilename(title="Please select a .wav file.",
+                                          filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
+    return filepath
+
+
 class Model:
-    def process_audio_file(self, file_path):
-        # Placeholder for processing the audio file and extracting relevant data
-        # You should implement this function based on your specific requirements
-        # You might use libraries like LibROSA or other audio processing tools
-        # Return a dictionary containing processed data (e.g., rt60, waveform, additional_data)
-        return {'rt60': 0.8, 'waveform': [0.1, 0.3, 0.5, 0.8, 1.0], 'additional_data': [0.2, 0.4, 0.6, 0.9, 1.2]}
+    def __init__(self):
+        self.filepath = None
+        self.data = None
+        self.sample_rate = None
+        self.mono_data = None
+
+    def read_wav_file(self):
+        if self.filepath:
+            self.data, self.sample_rate = sf.read(self.filepath)
+
+            if len(self.data.shape) > 1:
+                self.mono_data = np.mean(self.data, axis=1)
+
+            else:
+                self.mono_data = self.data
+
+            duration = len(self.mono_data) / self.sample_rate
+            print(f"Duration: {duration:.2f} seconds")
+
+    def run(self):
+
+        self.filepath = open_file()
+        self.read_wav_file()
