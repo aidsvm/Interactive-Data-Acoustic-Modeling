@@ -24,6 +24,7 @@ class Controller:
             sample_data = self.model.process_audio_file(dst)
 
             # Notify the View to update UI elements
+            self.view.update_filename_label(os.path.basename(dst))
             self.view.update_rt60_label(sample_data['rt60'])
             self.view.update_waveform_plot(sample_data['waveform'])
             self.view.update_additional_plot(sample_data['additional_data'])
@@ -33,6 +34,7 @@ class Controller:
             sample_data = self.model.process_audio_file(file_path)
 
             # Notify the View to update UI elements
+            self.view.update_filename_label(os.path.basename(file_path))
             self.view.update_rt60_label(sample_data['rt60'])
             self.view.update_waveform_plot(sample_data['waveform'])
             self.view.update_additional_plot(sample_data['additional_data'])

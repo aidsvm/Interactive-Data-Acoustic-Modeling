@@ -16,6 +16,10 @@ class View:
         self.load_button = tk.Button(self.root, text="Load Audio", command=self.load_sample)
         self.load_button.pack(pady=10)
 
+        # Filename Label
+        self.filename_label = tk.Label(self.root, text="File: No file selected")
+        self.filename_label.pack(pady=5)
+
         # Display RT60
         self.rt60_label = tk.Label(self.root, text="RT60 Value:")
         self.rt60_label.pack(pady=5)
@@ -35,6 +39,10 @@ class View:
         if file_path:
             # Notify the Controller about the user's action
             self.controller.load_sample(file_path)
+
+    def update_filename_label(self, filename):
+        # Update Filename Label
+        self.filename_label.config(text=f"File: {filename}")
 
     def update_rt60_label(self, rt60_value):
         # Update RT60 label
