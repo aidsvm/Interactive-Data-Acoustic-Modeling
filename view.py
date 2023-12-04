@@ -29,7 +29,7 @@ class View(ttk.Frame):
         self.waveform_canvas = tk.Canvas(self, width=400, height=200, )
         self.waveform_canvas.grid(row=15, column=1, pady=10)
 
-        self.fig_waveform = Figure(figsize=(5, 3), dpi=100)
+        self.fig_waveform = Figure(figsize=(7, 5), dpi=100)
         self.ax_waveform = self.fig_waveform.add_subplot(111)
         self.canvas_waveform = FigureCanvasTkAgg(self.fig_waveform, master=self.waveform_canvas)
         self.canvas_waveform.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
