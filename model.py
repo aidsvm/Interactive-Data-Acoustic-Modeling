@@ -1,19 +1,34 @@
 from tkinter import filedialog
 import soundfile as sf
+import numpy as np
+
 
 class Model:
-    def __init__(self, filename):
-        self.filename = filename
-        
-        @property
-        def filename(self):
-            return self.__filename
+    def __init__(self):
+        self.filepath = None
+        self.data = None
+        self.sample_rate = None
+        self.mono_data = None
 
-        @filename.setter
-        def filename(self, filepath):
-            if filepath:
-                data, sample_rate = sf.read(filepath)
+        def open_file(self):
+            filepath = filedialog.askopenfilename(title="Please select a .wav file.",
+                                                  filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
+            return filepath
 
+        def read_wav_file(self):
+            if self.filepath:
+                self.data, self.sample_rate = sf.read(self.filepath)
 
+                if len(self.data.shape) > 1:
+                    self.mono_data = np.mean(self.data, axis=1)
 
+                else:
+                    self.mono_data = self.data
 
+                duration = len(self.mono_data) / self.sample_rate
+                print(f"Duration: {duration:.2f} seconds")
+
+        def run(self):
+
+            self.filepath = self.open_file()
+            self.read_wav_file()
