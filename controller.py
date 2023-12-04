@@ -1,5 +1,6 @@
 import os
 from pydub import AudioSegment
+import model
 
 
 class Controller:
