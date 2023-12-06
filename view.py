@@ -35,9 +35,13 @@ class View(ttk.Frame):
         self.canvas_waveform = FigureCanvasTkAgg(self.fig_waveform, master=self.waveform_canvas)
         self.canvas_waveform.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+        self.highest_res_freq_label = tk.Label(self, text="")
+        self.highest_res_freq_label.grid(row=17, column=1, pady=10)
+
 
         self.time_label = tk.Label(self, text="")
         self.time_label.grid(row=18, column=1, pady=5)
+
 
         # Additional Plots
         self.additional_canvas = tk.Canvas(self, width=400, height=200)
@@ -71,6 +75,9 @@ class View(ttk.Frame):
     def update_rt60_label(self, rt60_value):
         # Update RT60 label
         self.rt60_label.config(text=f"RT60 Value: {rt60_value} seconds")
+
+    def display_highest_freq(self, highest_res_freq):
+        self.highest_res_freq_label.config(text=f"Highest Resonance Frequency: {highest_res_freq:.2f} Hz")
 
     def update_waveform_plot(self, waveform_data, length):
         # Update Waveform Plot

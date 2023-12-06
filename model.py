@@ -2,6 +2,7 @@ import soundfile as sf
 import numpy as np
 import os
 from pydub import AudioSegment
+from scipy.signal import find_peaks
 
 
 class Model:
@@ -45,3 +46,13 @@ class Model:
             length = self.data.shape[0] / self.sample_rate
 
             return duration, self.mono_data, length
+
+    def compute_resonance(self):
+        spectrum = np.fft.fft(self.mono_data)
+        frequencies = np.fft.fftfreq(len(self.mono_data), 1 / self.sample_rate)
+
+        max_index = np.argmax(np.abs(spectrum))
+
+        highest_res_freq = frequencies[max_index]
+
+        return highest_res_freq

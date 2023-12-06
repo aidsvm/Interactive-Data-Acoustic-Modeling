@@ -18,7 +18,9 @@ class Controller:
         # self.view.update_rt60_label()
         self.view.update_waveform_plot(waveform, length)
 
-        #self.view.update_filename_label(os.path.basename(dst))
-        #self.view.update_rt60_label(sample_data['rt60'])
-        #self.view.update_waveform_plot(sample_data['waveform'])
-        #self.view.update_additional_plot(sample_data['additional_data'])
+        self.view.display_highest_freq(self.model.compute_resonance())
+
+        # self.view.update_filename_label(os.path.basename(dst))
+        # self.view.update_rt60_label(sample_data['rt60'])
+        # self.view.update_waveform_plot(sample_data['waveform'])
+        # self.view.update_additional_plot(sample_data['additional_data'])
