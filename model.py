@@ -21,15 +21,15 @@ class Model:
             sound.export(dst, format="wav")
 
             # Call the Model to process the selected file
-            time, waveform = self.process_audio_file(dst)
+            time, waveform, length = self.process_audio_file(dst)
 
-            return time, waveform
+            return time, waveform, length
 
         else:
             # Call the Model to process the selected file
-            time, waveform = self.process_audio_file(self.file_path)
+            time, waveform, length = self.process_audio_file(self.file_path)
 
-            return time, waveform
+            return time, waveform, length
 
     def process_audio_file(self, filepath):
         if filepath:
@@ -42,5 +42,6 @@ class Model:
                 self.mono_data = self.data
 
             duration = len(self.mono_data) / self.sample_rate
+            length = self.data.shape[0] / self.sample_rate
 
-            return duration, self.mono_data
+            return duration, self.mono_data, length

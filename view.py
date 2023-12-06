@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -71,19 +72,20 @@ class View(ttk.Frame):
         # Update RT60 label
         self.rt60_label.config(text=f"RT60 Value: {rt60_value} seconds")
 
-    def update_waveform_plot(self, waveform_data):
+    def update_waveform_plot(self, waveform_data, length):
         # Update Waveform Plot
-        self.plot_waveform(waveform_data, self.waveform_canvas)
+        self.plot_waveform(waveform_data, length)
 
-    def update_additional_plot(self, additional_data):
+    def update_additional_plot(self, additional_data, time):
         # Update Additional Plot
-        self.plot_additional(additional_data, self.additional_canvas)
+        self.plot_additional(additional_data, time)
 
-    def plot_waveform(self, data, canvas):
+    def plot_waveform(self, data, length):
         self.ax_waveform.clear()
-        self.ax_waveform.plot(data)
-        self.ax_waveform.set_title('Audio Signal')
-        self.ax_waveform.set_xlabel('Sample Index')
+        time = np.linspace(0.,length, data.shape[0])
+        self.ax_waveform.plot(time, data)
+        self.ax_waveform.set_title('Wav Form')
+        self.ax_waveform.set_xlabel('Time')
         self.ax_waveform.set_ylabel('Amplitude')
 
         # Redraw the canvas

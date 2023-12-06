@@ -12,11 +12,11 @@ class Controller:
     def load_audio(self, file_path):
         self.model.file_path = file_path
         self.view.update_filename_label(os.path.basename(file_path))
-        time, waveform = self.model.load_audio()
+        time, waveform, length = self.model.load_audio()
 
         self.view.display_time_value(time)
         # self.view.update_rt60_label()
-        self.view.update_waveform_plot(waveform)
+        self.view.update_waveform_plot(waveform, length)
 
         #self.view.update_filename_label(os.path.basename(dst))
         #self.view.update_rt60_label(sample_data['rt60'])
