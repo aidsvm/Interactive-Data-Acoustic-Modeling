@@ -51,8 +51,11 @@ class Model:
         spectrum = np.fft.fft(self.mono_data)
         frequencies = np.fft.fftfreq(len(self.mono_data), 1 / self.sample_rate)
 
-        max_index = np.argmax(np.abs(spectrum))
+        positive_frequencies = frequencies[:len(frequencies) // 2]
+        positive_spectrum = spectrum[:len(spectrum) // 2]
 
-        highest_res_freq = frequencies[max_index]
+        max_index = np.argmax(np.abs(positive_spectrum))
+
+        highest_res_freq = positive_frequencies[max_index]
 
         return highest_res_freq
