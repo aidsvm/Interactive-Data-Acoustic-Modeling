@@ -11,6 +11,7 @@ from scipy.io import wavfile
 
 class View(ttk.Frame):
     def __init__(self, parent):
+        # Initialize the GUI components
         super().__init__(parent)
 
         # Create and place widgets
@@ -61,6 +62,7 @@ class View(ttk.Frame):
         self.controller = None
 
     def set_controller(self, controller):
+        # Set the controller for communication
         self.controller = controller
 
     def load_audio(self):
@@ -76,6 +78,7 @@ class View(ttk.Frame):
             self.controller.load_audio(file_path)
 
     def display_time_value(self, time):
+        # Display time value on the GUI
         self.time_label.config(text=f"Time: {time:.2f} seconds")
 
     def update_filename_label(self, filename):
@@ -87,6 +90,7 @@ class View(ttk.Frame):
         self.rt60_label.config(text=f"RT60 Value: {rt60_value} seconds")
 
     def display_highest_freq(self, highest_res_freq):
+        # Display highest resonance frequency on the GUI
         self.highest_res_freq_label.config(text=f"Highest Resonance Frequency: {highest_res_freq:.2f} Hz")
 
     def update_waveform_plot(self, waveform_data, length):
@@ -98,39 +102,33 @@ class View(ttk.Frame):
         self.plot_additional(additional_data, time)
 
     def update_rt60_plot(self, file_path):
+        # Update RT60 Plot
         self.plot_rt60(file_path)
 
-# Function plots all the frequencies into one spectrogram
     def plot_rt60(self, filepath):
+        # Plot RT60 on the GUI
         self.rt60_ax_waveform.clear()
-        # Read audio file
         sample_rate, data = wavfile.read(filepath)
-
-        # Calculate the spectrogram
         spectrum, freqs, t, im = self.rt60_ax_waveform.specgram(data, Fs=sample_rate, NFFT=1024,
                                                                 cmap=plt.get_cmap('autumn_r'))
         cbar = plt.colorbar(im, ax=self.rt60_ax_waveform)
         cbar.set_label('Intensity (dB)')
-
-        # Set labels and title
         self.rt60_ax_waveform.set_xlabel('Time (s)')
         self.rt60_ax_waveform.set_ylabel('Frequency (Hz)')
         self.rt60_ax_waveform.set_title('Spectrogram')
-
-        # Redraw the canvas
         self.rt60_canvas_waveform.draw()
 
     def plot_waveform(self, data, length):
+        # Plot waveform on the GUI
         self.ax_waveform.clear()
         time = np.linspace(0., length, data.shape[0])
         self.ax_waveform.plot(time, data)
         self.ax_waveform.set_title('Wav Form')
         self.ax_waveform.set_xlabel('Time (s)')
         self.ax_waveform.set_ylabel('Amplitude')
-
-        # Redraw the canvas
         self.canvas_waveform.draw()
 
     def plot_additional(self, data, canvas):
+        # Plot additional data on the GUI
         canvas.delete("all")
         canvas.create_line(0, 100, 400, 100, fill="green")  # Placeholder line for additional plot
