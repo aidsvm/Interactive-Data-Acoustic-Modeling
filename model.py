@@ -8,10 +8,21 @@ from scipy.signal import find_peaks
 class Model:
     def __init__(self, file_path):
         # Initialize the Model with the given file path
+        self.length = None
+        self.waveform = None
         self.file_path = file_path
         self.data = None
         self.sample_rate = None
         self.mono_data = None
+
+    def get_waveform_data(self):
+        return self.waveform
+
+    def get_waveform_length(self):
+        return self.length
+
+    def get_file_path(self):
+        return self.file_path
 
     def load_audio(self):
         # Check if the file is in WAV format; if not, convert it
@@ -23,15 +34,15 @@ class Model:
             sound.export(dst, format="wav")
 
             # Process the selected file
-            time, waveform, length = self.process_audio_file(dst)
+            time, self.waveform, self.length = self.process_audio_file(dst)
 
-            return time, waveform, length
+            return time, self.waveform, self.length
 
         else:
             # Process the selected file
-            time, waveform, length = self.process_audio_file(self.file_path)
+            time, self.waveform, self.length = self.process_audio_file(self.file_path)
 
-            return time, waveform, length
+            return time, self.waveform, self.length
 
     def process_audio_file(self, filepath):
         # Process the audio file and return relevant information
@@ -44,9 +55,9 @@ class Model:
                 self.mono_data = self.data
 
             duration = len(self.mono_data) / self.sample_rate
-            length = self.data.shape[0] / self.sample_rate
+            self.length = self.data.shape[0] / self.sample_rate
 
-            return duration, self.mono_data, length
+            return duration, self.mono_data, self.length
 
     def compute_resonance(self):
         # Compute and return the highest resonance frequency
@@ -78,4 +89,3 @@ class Model:
             high_freq_indices = np.where((frequencies >= high_freq_range[0]) & (frequencies < high_freq_range[1]))[0]
 
         return frequencies[low_freq_indices], frequencies[medium_freq_indices], frequencies[high_freq_indices]
-
