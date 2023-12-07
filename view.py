@@ -19,6 +19,17 @@ class View(ttk.Frame):
         self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
         self.load_button.grid(row=1, column=1, pady=10)
 
+        # Variable to keep track of the currently displayed graph
+        self.current_graph = "waveform"
+
+        # Button to show waveform
+        self.show_waveform_button = tk.Button(self, text="Show Waveform", command=self.show_waveform)
+        self.show_waveform_button.grid(row=1, column=2, pady=10)
+
+        # Button to show spectrogram
+        self.show_spectrogram_button = tk.Button(self, text="Show Spectrogram", command=self.show_spectrogram)
+        self.show_spectrogram_button.grid(row=5, column=2, pady=10)
+
         # Filename Label
         self.filename_label = tk.Label(self, text="")
         self.filename_label.grid(row=2, column=1)
@@ -29,7 +40,7 @@ class View(ttk.Frame):
 
         # RT60 Plots for Low, Medium, High Frequencies
         self.rt60_canvas = tk.Canvas(self, width=400, height=200)
-        self.rt60_canvas.grid(row=15, column=10, pady=10)
+        self.rt60_canvas.grid(row=15, column=1, pady=10)
 
         # Waveform Plot
         self.waveform_canvas = tk.Canvas(self, width=400, height=200)
@@ -73,6 +84,28 @@ class View(ttk.Frame):
             # Notify the Controller about the user's action
             self.controller.load_audio(file_path)
 
+    def show_waveform(self):
+        # Update the current graph variable
+        self.current_graph = "waveform"
+
+        # Notify the controller to update the view for the waveform
+        self.controller.show_waveform()
+
+    def show_spectrogram(self):
+        # Update the current graph variable
+        self.current_graph = "spectrogram"
+
+        # Notify the controller to update the view for the spectrogram
+        self.controller.show_spectrogram()
+
+    def hide_waveform(self):
+        # Hide the waveform canvas
+        self.canvas_waveform.get_tk_widget().pack_forget()
+
+    def hide_spectrogram(self):
+        # Hide the spectrogram canvas
+        self.rt60_canvas_waveform.get_tk_widget().pack_forget()
+
     def display_time_value(self, time):
         # Display time value on the GUI
         self.time_label.config(text=f"Time: {time:.2f} seconds")
@@ -86,7 +119,7 @@ class View(ttk.Frame):
         self.rt60_label.config(text=f"RT60 Value: {rt60_value} seconds")
 
     def display_highest_freq(self, highest_res_freq):
-        # Display highest resonance frequency on the GUI
+        # Display the highest resonance frequency on the GUI
         self.highest_res_freq_label.config(text=f"Highest Resonance Frequency: {highest_res_freq:.2f} Hz")
 
     def update_waveform_plot(self, waveform_data, length):

@@ -45,3 +45,19 @@ class Controller:
 
         # Plot frequency ranges on the GUI
         self.view.plot_frequency_ranges(rt60_low, rt60_medium, rt60_high)
+
+    def show_waveform(self):
+        if not self.view.current_graph == "spectrogram":
+            # Hide the spectrogram if it's currently displayed
+            self.view.hide_spectrogram()
+
+        # Update the waveform in the view
+        self.view.update_waveform_plot(self.model.get_waveform_data(), self.model.get_waveform_length())
+
+    def show_spectrogram(self):
+        if not self.view.current_graph == "waveform":
+            # Hide the waveform if it's currently displayed
+            self.view.hide_waveform()
+
+        # Update the spectrogram in the view
+        self.view.update_spectrogram(self.model.get_file_path())
