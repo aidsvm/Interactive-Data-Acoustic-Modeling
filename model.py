@@ -60,19 +60,22 @@ class Model:
 
         return highest_res_freq
 
-    def compute_rt60_for_frequencies(self):
-        # Compute and return frequencies for low, medium, and high ranges
-        spectrum = np.fft.fft(self.mono_data)
-        frequencies = np.fft.fftfreq(len(self.mono_data), 1 / self.sample_rate)
+    def compute_rt60_for_frequencies(self, low_freq_range=(0, 100), medium_freq_range=(100, 1000),
+                                     high_freq_range=(1000, None)):
 
-        # Define frequency ranges
-        low_freq_range = (0, 100)  # Adjust these values as needed
-        medium_freq_range = (100, 1000)
-        high_freq_range = (1000, self.sample_rate / 2)
+        # Normalize the spectrum
+        spectrum = np.fft.fft(self.mono_data) / len(self.mono_data)
+        frequencies = np.fft.fftfreq(len(self.mono_data), 1 / self.sample_rate)
 
         # Find indices corresponding to each frequency range
         low_freq_indices = np.where((frequencies >= low_freq_range[0]) & (frequencies < low_freq_range[1]))[0]
         medium_freq_indices = np.where((frequencies >= medium_freq_range[0]) & (frequencies < medium_freq_range[1]))[0]
-        high_freq_indices = np.where((frequencies >= high_freq_range[0]) & (frequencies < high_freq_range[1]))[0]
+
+        # Handle the case where high_freq_range[1] is None
+        if high_freq_range[1] is None:
+            high_freq_indices = np.where((frequencies >= high_freq_range[0]))[0]
+        else:
+            high_freq_indices = np.where((frequencies >= high_freq_range[0]) & (frequencies < high_freq_range[1]))[0]
 
         return frequencies[low_freq_indices], frequencies[medium_freq_indices], frequencies[high_freq_indices]
+

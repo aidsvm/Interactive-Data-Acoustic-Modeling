@@ -69,11 +69,7 @@ class View(ttk.Frame):
         # Open file dialog for selecting audio file
         file_path = filedialog.askopenfilename(title="Select Audio File",
                                                filetypes=(("WAV files", "*.wav"), ("All files", "*.*")))
-
-        print(f"Selected file: {file_path}")  # Add this print statement
-
         if file_path:
-            print("Calling controller.load_audio")  # Add this print statement
             # Notify the Controller about the user's action
             self.controller.load_audio(file_path)
 
@@ -105,8 +101,22 @@ class View(ttk.Frame):
         # Update RT60 Plot
         self.plot_rt60(file_path)
 
+    def plot_frequency_ranges(self, low_freq, medium_freq, high_freq):
+        # Plot frequency ranges on the GUI
+        self.additional_canvas.delete("all")
+
+        # Placeholder lines for low, medium, and high frequency ranges
+        self.additional_canvas.create_line(0, 50, 400, 50, fill="blue")  # Low frequencies
+        self.additional_canvas.create_line(0, 100, 400, 100, fill="orange")  # Medium frequencies
+        self.additional_canvas.create_line(0, 150, 400, 150, fill="red")  # High frequencies
+
+        # Optionally, you can add labels for better clarity
+        self.additional_canvas.create_text(200, 30, text="Low Frequencies", fill="blue")
+        self.additional_canvas.create_text(200, 80, text="Medium Frequencies", fill="orange")
+        self.additional_canvas.create_text(200, 130, text="High Frequencies", fill="red")
+
     def plot_rt60(self, filepath):
-        # Plot RT60 on the GUI
+        # Plot spectrogram on the GUI
         self.rt60_ax_waveform.clear()
         sample_rate, data = wavfile.read(filepath)
         spectrum, freqs, t, im = self.rt60_ax_waveform.specgram(data, Fs=sample_rate, NFFT=1024,

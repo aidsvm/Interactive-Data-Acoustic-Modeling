@@ -31,10 +31,17 @@ class Controller:
 
     def compute_rt60_for_frequencies(self, file_path):
         # Compute RT60 values for low, medium, and high frequencies
-        rt60_low, rt60_medium, rt60_high = self.model.compute_rt60_for_frequencies()
+        rt60_low, rt60_medium, rt60_high = self.model.compute_rt60_for_frequencies(
+            low_freq_range=(0, 100),
+            medium_freq_range=(100, 1000),  # Ensure this tuple is correctly defined
+            high_freq_range=(1000, None)
+        )
 
         # Update the RT60 plot in the view
         self.view.update_rt60_plot(file_path)
 
         # Optionally, update RT60 labels in the view if needed
         # self.view.update_rt60_label(rt60_low, rt60_medium, rt60_high)
+
+        # Plot frequency ranges on the GUI
+        self.view.plot_frequency_ranges(rt60_low, rt60_medium, rt60_high)
