@@ -16,6 +16,7 @@ class Controller:
         # Update the filename label in the view
         self.view.update_filename_label(os.path.basename(file_path))
 
+
         # Load audio data from the model
         time, waveform, length = self.model.load_audio()
 
@@ -45,3 +46,6 @@ class Controller:
 
         # Plot frequency ranges on the GUI
         self.view.plot_frequency_ranges(rt60_low, rt60_medium, rt60_high)
+
+        self.view.update_rt60_line_graph(rt60_low[0], rt60_low[1])
+        self.view.update_rt60_line_graph(rt60_high[0], rt60_high[1])

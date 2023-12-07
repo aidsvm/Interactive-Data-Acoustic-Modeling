@@ -46,6 +46,15 @@ class View(ttk.Frame):
         self.rt60_canvas_waveform = FigureCanvasTkAgg(self.rt60_fig_waveform, master=self.rt60_canvas)
         self.rt60_canvas_waveform.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+        # RT60 Line Graph
+        self.rt60_line_canvas = tk.Canvas(self, width=400, height=200)
+        self.rt60_line_canvas.grid(row=15, column=2, pady=10)
+
+        self.fig_rt60_line = plt.Figure(figsize=(7, 5), dpi=100)
+        self.ax_rt60_line = self.fig_rt60_line.add_subplot(111)
+        self.canvas_rt60_line = FigureCanvasTkAgg(self.fig_rt60_line, master=self.rt60_line_canvas)
+        self.canvas_rt60_line.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
         # Highest freq
         self.highest_res_freq_label = tk.Label(self, text="")
         self.highest_res_freq_label.grid(row=17, column=1, pady=10)
@@ -101,6 +110,18 @@ class View(ttk.Frame):
         # Update RT60 Plot
         self.plot_spectrogram(file_path)
 
+    def update_rt60_line_graph(self, frequencies, rt60_values):
+        # Update RT60 Line Graph
+        self.ax_rt60_line.clear()
+        self.ax_rt60_line.plot(frequencies, rt60_values, label='RT60')
+        self.ax_rt60_line.set_title('RT60 Line Graph')
+        self.ax_rt60_line.set_xlabel('Frequency (Hz)')
+        self.ax_rt60_line.set_ylabel('RT60 Value (seconds)')
+        self.ax_rt60_line.axhline(y=-60, color='r', linestyle='--', label='-60 dB Reference')
+        self.ax_rt60_line.legend()
+        self.ax_rt60_line.grid(True)
+        self.canvas_rt60_line.draw()
+
     def plot_frequency_ranges(self, low_freq, medium_freq, high_freq):
         # Plot frequency ranges on the GUI
         self.additional_canvas.delete("all")
@@ -135,6 +156,7 @@ class View(ttk.Frame):
         self.ax_waveform.plot(time, data)
         self.ax_waveform.set_title('Wav Form')
         self.ax_waveform.set_xlabel('Time (s)')
+        self.ax_waveform.grid(True)
         self.ax_waveform.set_ylabel('Amplitude')
         self.canvas_waveform.draw()
 
