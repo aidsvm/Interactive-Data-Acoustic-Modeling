@@ -152,38 +152,50 @@ class View(ttk.Frame):
         length = self.controller.get_waveform_length()
         data = self.controller.get_waveform_data()
 
-        # Plot waveform on the GUI
-        self.ax.clear()
+        self.figure, self.ax = plt.subplots()
         time = np.linspace(0, length, data.shape[0])
         self.ax.plot(time, data)
         self.ax.set_title('Waveform')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel('Amplitude')
+        self.canvas.figure = self.figure
         self.canvas.draw()
 
     def plot_combined_rt60(self):
+        self.figure, self.ax = plt.subplots()
         categories = ['Category A', 'Category B', 'Category C']
         values = [3, 5, 2]
         self.ax.bar(categories, values)
         self.ax.set_title("Combined RT60")
+        self.canvas.figure = self.figure
+        self.canvas.draw()
 
     def plot_low_rt60(self):
+        self.figure, self.ax = plt.subplots()
         labels = ['Label A', 'Label B', 'Label C']
         sizes = [15, 30, 45]
         self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
         self.ax.set_title("Low RT60")
+        self.canvas.figure = self.figure
+        self.canvas.draw()
 
     def plot_mid_rt60(self):
+        self.figure, self.ax = plt.subplots()
         x = np.linspace(0, 10, 100)
         y = np.sin(x) + np.random.normal(0, 0.1, 100)
         self.ax.plot(x, y)
         self.ax.set_title("Mid RT60")
+        self.canvas.figure = self.figure
+        self.canvas.draw()
 
     def plot_high_rt60(self):
+        self.figure, self.ax = plt.subplots()
         x = np.linspace(0, 5, 100)
         y = np.exp(x)
         self.ax.plot(x, y)
         self.ax.set_title("High RT60")
+        self.canvas.figure = self.figure
+        self.canvas.draw()
 
     def plot_spectrogram(self):
         filepath = self.controller.get_file_path()
