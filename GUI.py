@@ -74,6 +74,8 @@ class GUI:
                 # Update Additional Plot
                 self.plot_additional(sample_data['additional_data'], self.additional_canvas)
 
+                # Hello World, Hi!
+
     def process_audio_file(self, file_path):
         # Placeholder for processing the audio file and extracting relevant data
         # You should implement this function based on your specific requirements
