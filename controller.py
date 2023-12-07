@@ -38,7 +38,7 @@ class Controller:
         )
 
         # Update the RT60 plot in the view
-        self.view.update_rt60_plot(file_path)
+        self.view.update_spectrogram(file_path)
 
         # Optionally, update RT60 labels in the view if needed
         # self.view.update_rt60_label(rt60_low, rt60_medium, rt60_high)

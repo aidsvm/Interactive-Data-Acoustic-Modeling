@@ -97,9 +97,9 @@ class View(ttk.Frame):
         # Update Additional Plot
         self.plot_additional(additional_data, time)
 
-    def update_rt60_plot(self, file_path):
+    def update_spectrogram(self, file_path):
         # Update RT60 Plot
-        self.plot_rt60(file_path)
+        self.plot_spectrogram(file_path)
 
     def plot_frequency_ranges(self, low_freq, medium_freq, high_freq):
         # Plot frequency ranges on the GUI
@@ -115,7 +115,7 @@ class View(ttk.Frame):
         self.additional_canvas.create_text(200, 80, text="Medium Frequencies", fill="orange")
         self.additional_canvas.create_text(200, 130, text="High Frequencies", fill="red")
 
-    def plot_rt60(self, filepath):
+    def plot_spectrogram(self, filepath):
         # Plot spectrogram on the GUI
         self.rt60_ax_waveform.clear()
         sample_rate, data = wavfile.read(filepath)
