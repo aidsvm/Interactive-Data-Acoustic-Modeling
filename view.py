@@ -45,7 +45,7 @@ class View(ttk.Frame):
 
         # Display RT60
         self.rt60_label = tk.Label(self, text="")
-        self.rt60_label.grid(row=4, column=0, pady=10)
+        self.rt60_label.grid(row=2, column=1, pady=10)
 
         # Highest freq
         self.highest_res_freq_label = tk.Label(self, text="")
@@ -83,6 +83,7 @@ class View(ttk.Frame):
 
     def change_graph(self):
         self.reset_canvas()
+        self.rt60_label.config(text="")
 
         # Call the next graph function
         current_function = self.graph_functions[self.graph_index]
@@ -162,7 +163,10 @@ class View(ttk.Frame):
 
         # Call the combined RT60 graph function
         self.plot_combined_rt60()
-        self.update_rt60_label(self.spectrum, self.freqs, self.t)
+        if self.spectrum is None and self.freqs is None and self.t is None:
+            self.rt60_label.config(text="RT60 Value: Please showcase all graphs first!", fg="red")
+        else:
+            self.update_rt60_label(self.spectrum, self.freqs, self.t)
 
         # Redraw the canvas with the new graph
         self.canvas.draw()
@@ -277,15 +281,8 @@ class View(ttk.Frame):
 
         data_in_db = frequency_check(spectrum, freqs)
 
-        plt.figure(2)
-        plt.plot(t, data_in_db, linewidth=1, alpha=0.7, color='#004bc6')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Power (dB)')
-
         index_of_max = np.argmax(data_in_db)
         value_of_max = data_in_db[index_of_max]
-
-        plt.plot(t[index_of_max], data_in_db[index_of_max], 'go')
 
         sliced_array = data_in_db[index_of_max:]
         value_of_max_less_5 = value_of_max - 5
@@ -297,15 +294,14 @@ class View(ttk.Frame):
 
         value_of_max_less_5 = find_nearest_value(sliced_array, value_of_max_less_5)
         index_of_max_less_5 = np.where(data_in_db == value_of_max_less_5)[0]
-        plt.plot(t[index_of_max_less_5], data_in_db[index_of_max_less_5], 'yo')
 
         value_of_max_less_25 = value_of_max - 25
         value_of_max_less_25 = find_nearest_value(sliced_array, value_of_max_less_25)
         index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)[0]
-        plt.plot(t[index_of_max_less_25], data_in_db[index_of_max_less_25], 'ro')
 
         rt20 = (t[index_of_max_less_5] - t[index_of_max_less_25])[0]
         rt60 = 3 * rt20
 
         target_frequency = find_target_frequency(freqs)
-        print(f'The RT60 reverb time at freq {int(target_frequency)}Hz is {round(abs(rt60), 2)} seconds')
+        self.rt60_label.config(text=f'The RT60 reverb time at freq {int(target_frequency)}Hz is {round(abs(rt60), 2)}'
+                                    f' seconds', fg='black')
