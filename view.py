@@ -21,7 +21,7 @@ class View(ttk.Frame):
 
         self.graph_functions = [
             self.plot_waveform,
-            self.plot_combined_rt60,
+            # self.plot_combined_rt60,
             self.plot_low_rt60,
             self.plot_mid_rt60,
             self.plot_high_rt60,
@@ -37,6 +37,10 @@ class View(ttk.Frame):
         # Button to change graph
         self.change_graph_button = tk.Button(self, text="Switch Graph", command=self.change_graph)
         self.change_graph_button.grid(row=2, column=1, pady=10)
+
+        # Button to combine frequencies
+        self.combine_button = tk.Button(self, text="Combine Frequencies", command=self.combine_frequencies)
+        self.combine_button.grid(row=3, column=1, pady=10)
 
         # Filename Label
         self.filename_label = tk.Label(self, text="")
@@ -195,6 +199,16 @@ class View(ttk.Frame):
         self.ax.set_ylabel('Amplitude (dB)')
         self.ax.set_title('Combined Reverberation Time Calculation')
         self.ax.legend()
+
+    def combine_frequencies(self):
+        # Clear the current graph
+        self.ax.clear()
+
+        # Call the combined RT60 graph function
+        self.plot_combined_rt60()
+
+        # Redraw the canvas with the new graph
+        self.canvas.draw()
 
     def plot_low_rt60(self):
         filepath = self.controller.model.file_path
