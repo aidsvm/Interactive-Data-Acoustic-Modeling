@@ -2,7 +2,6 @@ import soundfile as sf
 import numpy as np
 import os
 from pydub import AudioSegment
-from scipy.signal import find_peaks
 
 
 class Model:

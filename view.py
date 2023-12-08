@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from tkinter import messagebox
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.io import wavfile
 
@@ -21,7 +19,6 @@ class View(ttk.Frame):
 
         self.graph_functions = [
             self.plot_waveform,
-            # self.plot_combined_rt60,
             self.plot_low_rt60,
             self.plot_mid_rt60,
             self.plot_high_rt60,
@@ -50,25 +47,6 @@ class View(ttk.Frame):
         self.rt60_label = tk.Label(self, text="")
         self.rt60_label.grid(row=10, column=1, pady=10)
 
-        # # RT60 Plots for Low, Medium, High Frequencies
-        # self.rt60_canvas = tk.Canvas(self, width=400, height=200)
-        # self.rt60_canvas.grid(row=15, column=1, pady=10)
-
-        # # Waveform Plot
-        # self.waveform_canvas = tk.Canvas(self, width=400, height=200)
-        # self.waveform_canvas.grid(row=15, column=1, pady=10)
-
-        # # Graphs the waveform to the GUI
-        # self.fig_waveform = Figure(figsize=(7, 5), dpi=100)
-        # self.ax_waveform = self.fig_waveform.add_subplot(111)
-        # self.canvas_waveform = FigureCanvasTkAgg(self.fig_waveform, master=self.waveform_canvas)
-        # self.canvas_waveform.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        #
-        # self.rt60_fig_waveform = Figure(figsize=(7, 5), dpi=100)
-        # self.rt60_ax_waveform = self.rt60_fig_waveform.add_subplot(111)
-        # self.rt60_canvas_waveform = FigureCanvasTkAgg(self.rt60_fig_waveform, master=self.rt60_canvas)
-        # self.rt60_canvas_waveform.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-
         # Highest freq
         self.highest_res_freq_label = tk.Label(self, text="")
         self.highest_res_freq_label.grid(row=17, column=1, pady=10)
@@ -77,12 +55,15 @@ class View(ttk.Frame):
         self.time_label = tk.Label(self, text="")
         self.time_label.grid(row=18, column=1, pady=5)
 
-        # # Additional Plots
-        # self.additional_canvas = tk.Canvas(self, width=400, height=200)
-        # self.additional_canvas.grid(row=19, column=1, pady=10)
-
         # set the controller
         self.controller = None
+
+    def reset_canvas(self):
+        self.ax.clear()
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self)
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.canvas.draw()
 
     def set_controller(self, controller):
         # Set the controller for communication
@@ -97,8 +78,7 @@ class View(ttk.Frame):
             self.controller.load_audio(file_path)
 
     def change_graph(self):
-        # Clear the current graph
-        self.ax.clear()
+        self.reset_canvas()
 
         # Call the next graph function
         current_function = self.graph_functions[self.graph_index]
@@ -126,32 +106,6 @@ class View(ttk.Frame):
         # Display the highest resonance frequency on the GUI
         self.highest_res_freq_label.config(text=f"Highest Resonance Frequency: {highest_res_freq:.2f} Hz")
 
-    # def update_waveform_plot(self, waveform_data, length):
-    #     # Update Waveform Plot
-    #     self.plot_waveform(waveform_data, length)
-
-    # def update_additional_plot(self, additional_data, time):
-    #     # Update Additional Plot
-    #     self.plot_additional(additional_data, time)
-
-    # def update_spectrogram(self, file_path):
-    #     # Update RT60 Plot
-    #     self.plot_spectrogram(file_path)
-
-    # def plot_frequency_ranges(self, low_freq, medium_freq, high_freq):
-    #     # Plot frequency ranges on the GUI
-    #     self.additional_canvas.delete("all")
-    #
-    #     # Placeholder lines for low, medium, and high frequency ranges
-    #     self.additional_canvas.create_line(0, 50, 400, 50, fill="blue")  # Low frequencies
-    #     self.additional_canvas.create_line(0, 100, 400, 100, fill="orange")  # Medium frequencies
-    #     self.additional_canvas.create_line(0, 150, 400, 150, fill="red")  # High frequencies
-    #
-    #     # Optionally, you can add labels for better clarity
-    #     self.additional_canvas.create_text(200, 30, text="Low Frequencies", fill="blue")
-    #     self.additional_canvas.create_text(200, 80, text="Medium Frequencies", fill="orange")
-    #     self.additional_canvas.create_text(200, 130, text="High Frequencies", fill="red")
-
     def plot_waveform(self):
         length = self.controller.get_waveform_length()
         data = self.controller.get_waveform_data()
@@ -166,6 +120,8 @@ class View(ttk.Frame):
         self.canvas.draw()
 
     def plot_combined_rt60(self):
+        self.reset_canvas()
+
         filepath = self.controller.model.file_path
 
         fs, signal = wavfile.read(filepath)
@@ -301,8 +257,3 @@ class View(ttk.Frame):
         self.ax.set_ylabel('Frequency (Hz)')
         self.ax.set_title('Spectrogram')
         self.canvas.draw()
-
-    # def plot_additional(self, data, canvas):
-    #     # Plot additional data on the GUI
-    #     canvas.delete("all")
-    #     canvas.create_line(0, 100, 400, 100, fill="green")  # Placeholder line for additional plot

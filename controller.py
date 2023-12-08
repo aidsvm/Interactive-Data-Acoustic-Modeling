@@ -23,9 +23,6 @@ class Controller:
         # Display the highest resonance frequency in the view
         self.view.display_highest_freq(self.model.compute_resonance())
 
-        # Compute and display RT60 values for different frequency ranges
-        # self.compute_rt60_for_frequencies(file_path)
-
     def get_waveform_length(self):
         return self.model.get_waveform_length()
 
@@ -39,7 +36,7 @@ class Controller:
         # Compute RT60 values for low, medium, and high frequencies
         rt60_low, rt60_medium, rt60_high = self.model.compute_rt60_for_frequencies(
             low_freq_range=(0, 100),
-            medium_freq_range=(100, 1000),  # Ensure this tuple is correctly defined
+            medium_freq_range=(100, 1000),
             high_freq_range=(1000, None)
         )
 
@@ -49,9 +46,3 @@ class Controller:
             return rt60_medium
         elif type_range == 'high':
             return rt60_high
-
-
-
-
-        # Optionally, update RT60 labels in the view if needed
-        # self.view.update_rt60_label(rt60_low, rt60_medium, rt60_high)
