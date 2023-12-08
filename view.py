@@ -123,30 +123,12 @@ class View(ttk.Frame):
     def plot_combined_rt60(self):
         self.reset_canvas()
 
-        filepath = self.controller.model.file_path
+        filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
 
-        # Low RT60
-        low_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'low')
-        time_axis_low = np.arange(0, len(signal)) / fs
-        if len(low_rt60_db) != len(time_axis_low):
-            low_rt60_db = np.interp(time_axis_low, np.linspace(0, 1, len(low_rt60_db)), low_rt60_db)
-        amplitude_low = np.exp(-low_rt60_db / 20 * time_axis_low)
-
-        # Mid RT60
-        mid_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'mid')
-        time_axis_mid = np.arange(0, len(signal)) / fs
-        if len(mid_rt60_db) != len(time_axis_mid):
-            mid_rt60_db = np.interp(time_axis_mid, np.linspace(0, 1, len(mid_rt60_db)), mid_rt60_db)
-        amplitude_mid = np.exp(-mid_rt60_db / 20 * time_axis_mid)
-
-        # High RT60
-        high_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'high')
-        time_axis_high = np.arange(0, len(signal)) / fs
-        if len(high_rt60_db) != len(time_axis_high):
-            high_rt60_db = np.interp(time_axis_high, np.linspace(0, 1, len(high_rt60_db)), high_rt60_db)
-        amplitude_high = np.exp(-high_rt60_db / 20 * time_axis_high)
+        time_axis_low, amplitude_low, time_axis_mid, amplitude_mid, time_axis_high, amplitude_high =\
+            (self.controller.plot_combined_rt60(filepath, fs, signal))
 
         self.ax.plot(time_axis_low, 20 * np.log10(amplitude_low), label='Low RT60 Decay Curve')
         self.ax.plot(time_axis_mid, 20 * np.log10(amplitude_mid), label='Mid RT60 Decay Curve')
@@ -172,21 +154,12 @@ class View(ttk.Frame):
         self.canvas.draw()
 
     def plot_low_rt60(self):
-        filepath = self.controller.model.file_path
+        filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
 
-        low_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'low')
+        time_axis, amplitude, decay_point = self.controller.plot_low_rt60(filepath, fs, signal)
 
-        time_axis = np.arange(0, len(signal)) / fs
-
-        if len(low_rt60_db) != len(time_axis):
-            low_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(low_rt60_db)), low_rt60_db)
-
-        amplitude = np.exp(-low_rt60_db / 20 * time_axis)
-
-        threshold = -60
-        decay_point = np.argmax(amplitude <= threshold)
         self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
 
         self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
@@ -198,21 +171,12 @@ class View(ttk.Frame):
         self.ax.legend()
 
     def plot_mid_rt60(self):
-        filepath = self.controller.model.file_path
+        filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
 
-        mid_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'mid')
+        time_axis, amplitude, decay_point = self.controller.plot_mid_rt60(filepath, fs, signal)
 
-        time_axis = np.arange(0, len(signal)) / fs
-
-        if len(mid_rt60_db) != len(time_axis):
-            mid_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(mid_rt60_db)), mid_rt60_db)
-
-        amplitude = np.exp(-mid_rt60_db / 20 * time_axis)
-
-        threshold = -60
-        decay_point = np.argmax(amplitude <= threshold)
         self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
 
         self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
@@ -224,21 +188,12 @@ class View(ttk.Frame):
         self.ax.legend()
 
     def plot_high_rt60(self):
-        filepath = self.controller.model.file_path
+        filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
 
-        high_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'high')
+        time_axis, amplitude, decay_point = self.controller.plot_high_rt60(filepath, fs, signal)
 
-        time_axis = np.arange(0, len(signal)) / fs
-
-        if len(high_rt60_db) != len(time_axis):
-            high_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(high_rt60_db)), high_rt60_db)
-
-        amplitude = np.exp(-high_rt60_db / 20 * time_axis)
-
-        threshold = -60
-        decay_point = np.argmax(amplitude <= threshold)
         self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
 
         self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
@@ -264,44 +219,8 @@ class View(ttk.Frame):
         self.canvas.draw()
 
     def update_rt60_label(self, spectrum, freqs, t):
-        def find_target_frequency(freqs):
-            for x in freqs:
-                if x > 1000:
-                    break
-            return x
 
-        def frequency_check(spectrum, freqs):
-            target_frequency = find_target_frequency(freqs)
-            index_of_frequency = np.where(freqs == target_frequency)[0][0]
-            # find sound data for a particular frequency
-            data_for_frequency = spectrum[index_of_frequency]
-            # change a digital signal for values in decibels
-            data_in_db_fun = 10 * np.log10(data_for_frequency)
-            return data_in_db_fun
+        target_frequency, rt60 = self.controller.calculate_rt60_value(spectrum, freqs, t)
 
-        data_in_db = frequency_check(spectrum, freqs)
-
-        index_of_max = np.argmax(data_in_db)
-        value_of_max = data_in_db[index_of_max]
-
-        sliced_array = data_in_db[index_of_max:]
-        value_of_max_less_5 = value_of_max - 5
-
-        def find_nearest_value(array, value):
-            array = np.asarray(array)
-            idx = (np.abs(array - value)).argmin()
-            return array[idx]
-
-        value_of_max_less_5 = find_nearest_value(sliced_array, value_of_max_less_5)
-        index_of_max_less_5 = np.where(data_in_db == value_of_max_less_5)[0]
-
-        value_of_max_less_25 = value_of_max - 25
-        value_of_max_less_25 = find_nearest_value(sliced_array, value_of_max_less_25)
-        index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)[0]
-
-        rt20 = (t[index_of_max_less_5] - t[index_of_max_less_25])[0]
-        rt60 = 3 * rt20
-
-        target_frequency = find_target_frequency(freqs)
         self.rt60_label.config(text=f'The RT60 reverb time at freq {int(target_frequency)}Hz is {round(abs(rt60), 2)}'
                                     f' seconds', fg='black')

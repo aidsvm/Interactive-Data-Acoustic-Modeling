@@ -89,3 +89,64 @@ class Model:
 
         return frequencies[low_freq_indices], frequencies[medium_freq_indices], frequencies[high_freq_indices]
 
+    def plot_combined_rt60(self, fs, signal, rt60_db):
+        time_axis = np.arange(0, len(signal)) / fs
+        if len(rt60_db) != len(time_axis):
+            rt60_db = np.interp(time_axis, np.linspace(0, 1, len(rt60_db)), rt60_db)
+        amplitude = np.exp(-rt60_db / 20 * time_axis)
+
+        return time_axis, amplitude
+
+    def plot_rt60(self, fs, signal, rt60_db):
+        time_axis = np.arange(0, len(signal)) / fs
+        if len(rt60_db) != len(time_axis):
+            rt60_db = np.interp(time_axis, np.linspace(0, 1, len(rt60_db)), rt60_db)
+        amplitude = np.exp(-rt60_db / 20 * time_axis)
+        threshold = -60
+        decay_point = np.argmax(amplitude <= threshold)
+
+        return time_axis, amplitude, decay_point
+
+    def calculate_rt60_value(self, spectrum, freqs, t):
+        def find_target_frequency(freqs):
+            global x
+            for x in freqs:
+                if x > 1000:
+                    break
+            return x
+
+        def frequency_check(spectrum, freqs):
+            target_frequency = find_target_frequency(freqs)
+            index_of_frequency = np.where(freqs == target_frequency)[0][0]
+            # find sound data for a particular frequency
+            data_for_frequency = spectrum[index_of_frequency]
+            # change a digital signal for values in decibels
+            data_in_db_fun = 10 * np.log10(data_for_frequency)
+            return data_in_db_fun
+
+        data_in_db = frequency_check(spectrum, freqs)
+
+        index_of_max = np.argmax(data_in_db)
+        value_of_max = data_in_db[index_of_max]
+
+        sliced_array = data_in_db[index_of_max:]
+        value_of_max_less_5 = value_of_max - 5
+
+        def find_nearest_value(array, value):
+            array = np.asarray(array)
+            idx = (np.abs(array - value)).argmin()
+            return array[idx]
+
+        value_of_max_less_5 = find_nearest_value(sliced_array, value_of_max_less_5)
+        index_of_max_less_5 = np.where(data_in_db == value_of_max_less_5)[0]
+
+        value_of_max_less_25 = value_of_max - 25
+        value_of_max_less_25 = find_nearest_value(sliced_array, value_of_max_less_25)
+        index_of_max_less_25 = np.where(data_in_db == value_of_max_less_25)[0]
+
+        rt20 = (t[index_of_max_less_5] - t[index_of_max_less_25])[0]
+        rt60 = 3 * rt20
+
+        target_frequency = find_target_frequency(freqs)
+
+        return target_frequency, rt60
