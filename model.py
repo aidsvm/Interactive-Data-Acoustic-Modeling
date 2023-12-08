@@ -89,3 +89,4 @@ class Model:
             high_freq_indices = np.where((frequencies >= high_freq_range[0]) & (frequencies < high_freq_range[1]))[0]
 
         return frequencies[low_freq_indices], frequencies[medium_freq_indices], frequencies[high_freq_indices]
+
