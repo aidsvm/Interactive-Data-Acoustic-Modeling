@@ -32,7 +32,43 @@ class Controller:
     def get_file_path(self):
         return self.model.get_file_path()
 
-    def compute_rt60_for_frequencies(self, file_path, type_range):
+    def plot_combined_rt60(self, filepath, fs, signal):
+        # Low RT60
+        low_rt60_db = self.compute_rt60_for_frequencies('low')
+        time_axis_low, amplitude_low = self.model.plot_combined_rt60(fs, signal, low_rt60_db)
+
+        # Mid RT60
+        mid_rt60_db = self.compute_rt60_for_frequencies('mid')
+        time_axis_mid, amplitude_mid = self.model.plot_combined_rt60(fs, signal, mid_rt60_db)
+
+        # High RT60
+        high_rt60_db = self.compute_rt60_for_frequencies('high')
+        time_axis_high, amplitude_high = self.model.plot_combined_rt60(fs, signal, high_rt60_db)
+
+        return time_axis_low, amplitude_low, time_axis_mid, amplitude_mid, time_axis_high, amplitude_high
+
+    def plot_low_rt60(self, filepath, fs, signal):
+        low_rt60_db = self.compute_rt60_for_frequencies('low')
+
+        time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, low_rt60_db)
+
+        return time_axis, amplitude, decay_point
+
+    def plot_mid_rt60(self, filepath, fs, signal):
+        plot_mid_rt60 = self.compute_rt60_for_frequencies('mid')
+
+        time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, plot_mid_rt60)
+
+        return time_axis, amplitude, decay_point
+
+    def plot_high_rt60(self, filepath, fs, signal):
+        plot_high_rt60 = self.compute_rt60_for_frequencies('high')
+
+        time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, plot_high_rt60)
+
+        return time_axis, amplitude, decay_point
+
+    def compute_rt60_for_frequencies(self, type_range):
         # Compute RT60 values for low, medium, and high frequencies
         rt60_low, rt60_medium, rt60_high = self.model.compute_rt60_for_frequencies(
             low_freq_range=(0, 100),
@@ -46,3 +82,8 @@ class Controller:
             return rt60_medium
         elif type_range == 'high':
             return rt60_high
+
+    def calculate_rt60_value(self, spectrum, freqs, t):
+        target_frequency, rt60 = self.model.calculate_rt60_value(spectrum, freqs, t)
+
+        return target_frequency, rt60
