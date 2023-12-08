@@ -152,50 +152,127 @@ class View(ttk.Frame):
         length = self.controller.get_waveform_length()
         data = self.controller.get_waveform_data()
 
-        self.figure, self.ax = plt.subplots()
+        # Plot waveform on the GUI
+        self.ax.clear()
         time = np.linspace(0, length, data.shape[0])
         self.ax.plot(time, data)
         self.ax.set_title('Waveform')
         self.ax.set_xlabel('Time (s)')
         self.ax.set_ylabel('Amplitude')
-        self.canvas.figure = self.figure
         self.canvas.draw()
 
     def plot_combined_rt60(self):
-        self.figure, self.ax = plt.subplots()
-        categories = ['Category A', 'Category B', 'Category C']
-        values = [3, 5, 2]
-        self.ax.bar(categories, values)
-        self.ax.set_title("Combined RT60")
-        self.canvas.figure = self.figure
-        self.canvas.draw()
+        filepath = self.controller.model.file_path
+
+        fs, signal = wavfile.read(filepath)
+
+        # Low RT60
+        low_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'low')
+        time_axis_low = np.arange(0, len(signal)) / fs
+        if len(low_rt60_db) != len(time_axis_low):
+            low_rt60_db = np.interp(time_axis_low, np.linspace(0, 1, len(low_rt60_db)), low_rt60_db)
+        amplitude_low = np.exp(-low_rt60_db / 20 * time_axis_low)
+
+        # Mid RT60
+        mid_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'mid')
+        time_axis_mid = np.arange(0, len(signal)) / fs
+        if len(mid_rt60_db) != len(time_axis_mid):
+            mid_rt60_db = np.interp(time_axis_mid, np.linspace(0, 1, len(mid_rt60_db)), mid_rt60_db)
+        amplitude_mid = np.exp(-mid_rt60_db / 20 * time_axis_mid)
+
+        # High RT60
+        high_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'high')
+        time_axis_high = np.arange(0, len(signal)) / fs
+        if len(high_rt60_db) != len(time_axis_high):
+            high_rt60_db = np.interp(time_axis_high, np.linspace(0, 1, len(high_rt60_db)), high_rt60_db)
+        amplitude_high = np.exp(-high_rt60_db / 20 * time_axis_high)
+
+        self.ax.plot(time_axis_low, 20 * np.log10(amplitude_low), label='Low RT60 Decay Curve')
+        self.ax.plot(time_axis_mid, 20 * np.log10(amplitude_mid), label='Mid RT60 Decay Curve')
+        self.ax.plot(time_axis_high, 20 * np.log10(amplitude_high), label='High RT60 Decay Curve')
+
+        self.ax.set_xlabel('Time (s)')
+        self.ax.set_ylabel('Amplitude (dB)')
+        self.ax.set_title('Combined Reverberation Time Calculation')
+        self.ax.legend()
 
     def plot_low_rt60(self):
-        self.figure, self.ax = plt.subplots()
-        labels = ['Label A', 'Label B', 'Label C']
-        sizes = [15, 30, 45]
-        self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
-        self.ax.set_title("Low RT60")
-        self.canvas.figure = self.figure
-        self.canvas.draw()
+        filepath = self.controller.model.file_path
+
+        fs, signal = wavfile.read(filepath)
+
+        low_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'low')
+
+        time_axis = np.arange(0, len(signal)) / fs
+
+        if len(low_rt60_db) != len(time_axis):
+            low_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(low_rt60_db)), low_rt60_db)
+
+        amplitude = np.exp(-low_rt60_db / 20 * time_axis)
+
+        threshold = -60
+        decay_point = np.argmax(amplitude <= threshold)
+        self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
+
+        self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
+                        label='60 dB Decay Point')
+
+        self.ax.set_xlabel('Time (s)')
+        self.ax.set_ylabel('Amplitude (dB)')
+        self.ax.set_title('Low Reverberation Time Calculation')
+        self.ax.legend()
 
     def plot_mid_rt60(self):
-        self.figure, self.ax = plt.subplots()
-        x = np.linspace(0, 10, 100)
-        y = np.sin(x) + np.random.normal(0, 0.1, 100)
-        self.ax.plot(x, y)
-        self.ax.set_title("Mid RT60")
-        self.canvas.figure = self.figure
-        self.canvas.draw()
+        filepath = self.controller.model.file_path
+
+        fs, signal = wavfile.read(filepath)
+
+        mid_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'mid')
+
+        time_axis = np.arange(0, len(signal)) / fs
+
+        if len(mid_rt60_db) != len(time_axis):
+            mid_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(mid_rt60_db)), mid_rt60_db)
+
+        amplitude = np.exp(-mid_rt60_db / 20 * time_axis)
+
+        threshold = -60
+        decay_point = np.argmax(amplitude <= threshold)
+        self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
+
+        self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
+                        label='60 dB Decay Point')
+
+        self.ax.set_xlabel('Time (s)')
+        self.ax.set_ylabel('Amplitude (dB)')
+        self.ax.set_title('Mid Reverberation Time Calculation')
+        self.ax.legend()
 
     def plot_high_rt60(self):
-        self.figure, self.ax = plt.subplots()
-        x = np.linspace(0, 5, 100)
-        y = np.exp(x)
-        self.ax.plot(x, y)
-        self.ax.set_title("High RT60")
-        self.canvas.figure = self.figure
-        self.canvas.draw()
+        filepath = self.controller.model.file_path
+
+        fs, signal = wavfile.read(filepath)
+
+        high_rt60_db = self.controller.compute_rt60_for_frequencies(filepath, 'high')
+
+        time_axis = np.arange(0, len(signal)) / fs
+
+        if len(high_rt60_db) != len(time_axis):
+            high_rt60_db = np.interp(time_axis, np.linspace(0, 1, len(high_rt60_db)), high_rt60_db)
+
+        amplitude = np.exp(-high_rt60_db / 20 * time_axis)
+
+        threshold = -60
+        decay_point = np.argmax(amplitude <= threshold)
+        self.ax.plot(time_axis, 20 * np.log10(amplitude), label='Decay Curve')
+
+        self.ax.scatter(time_axis[decay_point], 20 * np.log10(amplitude[decay_point]), color='red',
+                        label='60 dB Decay Point')
+
+        self.ax.set_xlabel('Time (s)')
+        self.ax.set_ylabel('Amplitude (dB)')
+        self.ax.set_title('High Reverberation Time Calculation')
+        self.ax.legend()
 
     def plot_spectrogram(self):
         filepath = self.controller.get_file_path()
