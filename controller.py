@@ -1,8 +1,10 @@
+# Import necessary library
 import os
 
-
+# Define the Controller class to manage interactions between the Model and View
 class Controller:
     def __init__(self, model, view):
+        # Initialize the Controller with a model and a view
         self.model = model
         self.view = view
 
@@ -24,46 +26,47 @@ class Controller:
         self.view.display_highest_freq(self.model.compute_resonance())
 
     def get_waveform_length(self):
+        # Get the waveform length from the model
         return self.model.get_waveform_length()
 
     def get_waveform_data(self):
+        # Get the waveform data from the model
         return self.model.get_waveform_data()
 
     def get_file_path(self):
+        # Get the file path from the model
         return self.model.get_file_path()
 
     def plot_combined_rt60(self, filepath, fs, signal):
-        # Low RT60
+        # Plot combined RT60 for low, mid, and high frequency ranges
         low_rt60_db = self.compute_rt60_for_frequencies('low')
         time_axis_low, amplitude_low = self.model.plot_combined_rt60(fs, signal, low_rt60_db)
 
-        # Mid RT60
         mid_rt60_db = self.compute_rt60_for_frequencies('mid')
         time_axis_mid, amplitude_mid = self.model.plot_combined_rt60(fs, signal, mid_rt60_db)
 
-        # High RT60
         high_rt60_db = self.compute_rt60_for_frequencies('high')
         time_axis_high, amplitude_high = self.model.plot_combined_rt60(fs, signal, high_rt60_db)
 
         return time_axis_low, amplitude_low, time_axis_mid, amplitude_mid, time_axis_high, amplitude_high
 
     def plot_low_rt60(self, filepath, fs, signal):
+        # Plot RT60 for the low frequency range
         low_rt60_db = self.compute_rt60_for_frequencies('low')
-
         time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, low_rt60_db)
 
         return time_axis, amplitude, decay_point
 
     def plot_mid_rt60(self, filepath, fs, signal):
+        # Plot RT60 for the mid frequency range
         plot_mid_rt60 = self.compute_rt60_for_frequencies('mid')
-
         time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, plot_mid_rt60)
 
         return time_axis, amplitude, decay_point
 
     def plot_high_rt60(self, filepath, fs, signal):
+        # Plot RT60 for the high frequency range
         plot_high_rt60 = self.compute_rt60_for_frequencies('high')
-
         time_axis, amplitude, decay_point = self.model.plot_rt60(fs, signal, plot_high_rt60)
 
         return time_axis, amplitude, decay_point
@@ -84,6 +87,7 @@ class Controller:
             return rt60_high
 
     def calculate_rt60_value(self, spectrum, freqs, t):
+        # Calculate RT60 value for a specific frequency range
         target_frequency, rt60 = self.model.calculate_rt60_value(spectrum, freqs, t)
 
         return target_frequency, rt60

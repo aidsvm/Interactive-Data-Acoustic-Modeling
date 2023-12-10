@@ -3,7 +3,7 @@ import numpy as np
 import os
 from pydub import AudioSegment
 
-
+# Define the Model class to handle audio data and processing
 class Model:
     def __init__(self, file_path):
         # Initialize the Model with the given file path
@@ -15,12 +15,15 @@ class Model:
         self.mono_data = None
 
     def get_waveform_data(self):
+        # Return the waveform data
         return self.waveform
 
     def get_waveform_length(self):
+        # Return the length of the waveform
         return self.length
 
     def get_file_path(self):
+        # Return the file path
         return self.file_path
 
     def load_audio(self):
@@ -46,13 +49,16 @@ class Model:
     def process_audio_file(self, filepath):
         # Process the audio file and return relevant information
         if filepath:
+            # Read audio data and sample rate using soundfile library
             self.data, self.sample_rate = sf.read(filepath)
 
+            # Convert stereo data to mono if needed
             if len(self.data.shape) > 1:
                 self.mono_data = np.mean(self.data, axis=1)
             else:
                 self.mono_data = self.data
 
+            # Calculate duration and length of the audio
             duration = len(self.mono_data) / self.sample_rate
             self.length = self.data.shape[0] / self.sample_rate
 
@@ -90,6 +96,7 @@ class Model:
         return frequencies[low_freq_indices], frequencies[medium_freq_indices], frequencies[high_freq_indices]
 
     def plot_combined_rt60(self, fs, signal, rt60_db):
+        # Plot the combined RT60
         time_axis = np.arange(0, len(signal)) / fs
         if len(rt60_db) != len(time_axis):
             rt60_db = np.interp(time_axis, np.linspace(0, 1, len(rt60_db)), rt60_db)
@@ -98,6 +105,7 @@ class Model:
         return time_axis, amplitude
 
     def plot_rt60(self, fs, signal, rt60_db):
+        # Plot the RT60 with decay point
         time_axis = np.arange(0, len(signal)) / fs
         if len(rt60_db) != len(time_axis):
             rt60_db = np.interp(time_axis, np.linspace(0, 1, len(rt60_db)), rt60_db)
@@ -108,6 +116,7 @@ class Model:
         return time_axis, amplitude, decay_point
 
     def calculate_rt60_value(self, spectrum, freqs, t):
+        # Calculate RT60 value for a specific frequency range
         def find_target_frequency(freqs):
             global x
             for x in freqs:
@@ -116,6 +125,7 @@ class Model:
             return x
 
         def frequency_check(spectrum, freqs):
+            # Check the frequency range and convert data to decibels
             target_frequency = find_target_frequency(freqs)
             index_of_frequency = np.where(freqs == target_frequency)[0][0]
             # find sound data for a particular frequency
@@ -124,6 +134,7 @@ class Model:
             data_in_db_fun = 10 * np.log10(data_for_frequency)
             return data_in_db_fun
 
+        # Check the frequency range for the highest resonance
         data_in_db = frequency_check(spectrum, freqs)
 
         index_of_max = np.argmax(data_in_db)
@@ -133,10 +144,12 @@ class Model:
         value_of_max_less_5 = value_of_max - 5
 
         def find_nearest_value(array, value):
+            # Find the nearest value in an array
             array = np.asarray(array)
             idx = (np.abs(array - value)).argmin()
             return array[idx]
 
+        # Find values for RT20 and RT60
         value_of_max_less_5 = find_nearest_value(sliced_array, value_of_max_less_5)
         index_of_max_less_5 = np.where(data_in_db == value_of_max_less_5)[0]
 

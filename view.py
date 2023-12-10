@@ -7,6 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.io import wavfile
 
 
+# Define the View class responsible for the GUI components
 class View(ttk.Frame):
     def __init__(self, parent):
         # Initialize the GUI components
@@ -17,6 +18,7 @@ class View(ttk.Frame):
         self.load_button = tk.Button(self, text="Load Audio", command=self.load_audio)
         self.load_button.grid(row=0, column=0, pady=10)
 
+        # Graph functions for switching between graphs
         self.graph_functions = [
             self.plot_waveform,
             self.plot_low_rt60,
@@ -26,6 +28,7 @@ class View(ttk.Frame):
         ]
         self.graph_index = 0
 
+        # Matplotlib figure and canvas for displaying graphs
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
         self.canvas.get_tk_widget().grid(row=2, column=0, sticky=(tk.N, tk.W, tk.E, tk.S))
@@ -55,6 +58,7 @@ class View(ttk.Frame):
         self.time_label = tk.Label(self, text="")
         self.time_label.grid(row=6, column=0, pady=5)
 
+        # Variables for storing spectrogram data
         self.spectrum = None
         self.freqs = None
         self.t = None
@@ -63,6 +67,7 @@ class View(ttk.Frame):
         self.controller = None
 
     def reset_canvas(self):
+        # Reset the Matplotlib canvas
         self.ax.clear()
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvasTkAgg(self.figure, master=self)
@@ -82,6 +87,7 @@ class View(ttk.Frame):
             self.controller.load_audio(file_path)
 
     def change_graph(self):
+        # Reset the canvas and RT60 label
         self.reset_canvas()
         self.rt60_label.config(text="")
 
@@ -108,6 +114,7 @@ class View(ttk.Frame):
         self.highest_res_freq_label.config(text=f"Highest Resonance Frequency: {highest_res_freq:.2f} Hz")
 
     def plot_waveform(self):
+        # Plot waveform on the GUI
         length = self.controller.get_waveform_length()
         data = self.controller.get_waveform_data()
 
@@ -121,13 +128,14 @@ class View(ttk.Frame):
         self.canvas.draw()
 
     def plot_combined_rt60(self):
+        # Plot combined RT60 for low, mid, and high frequency ranges
         self.reset_canvas()
 
         filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
 
-        time_axis_low, amplitude_low, time_axis_mid, amplitude_mid, time_axis_high, amplitude_high =\
+        time_axis_low, amplitude_low, time_axis_mid, amplitude_mid, time_axis_high, amplitude_high = \
             (self.controller.plot_combined_rt60(filepath, fs, signal))
 
         self.ax.plot(time_axis_low, 20 * np.log10(amplitude_low), label='Low RT60 Decay Curve')
@@ -154,6 +162,7 @@ class View(ttk.Frame):
         self.canvas.draw()
 
     def plot_low_rt60(self):
+        # Plot RT60 for the low frequency range
         filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
@@ -171,6 +180,7 @@ class View(ttk.Frame):
         self.ax.legend()
 
     def plot_mid_rt60(self):
+        # Plot RT60 for the mid frequency range
         filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
@@ -188,6 +198,7 @@ class View(ttk.Frame):
         self.ax.legend()
 
     def plot_high_rt60(self):
+        # Plot RT60 for the high frequency range
         filepath = self.controller.get_file_path()
 
         fs, signal = wavfile.read(filepath)
@@ -210,7 +221,7 @@ class View(ttk.Frame):
         # Plot spectrogram on the GUI
         sample_rate, data = wavfile.read(filepath)
         self.spectrum, self.freqs, self.t, im = self.ax.specgram(data, Fs=sample_rate, NFFT=1024,
-                                                  cmap=plt.get_cmap('autumn_r'))
+                                                                 cmap=plt.get_cmap('autumn_r'))
         cbar = plt.colorbar(im, ax=self.ax)
         cbar.set_label('Intensity (dB)')
         self.ax.set_xlabel('Time (s)')

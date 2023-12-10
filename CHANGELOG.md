@@ -30,6 +30,7 @@ Added a button to display spectrogram, calculated RT60 values again. Adding comm
 Fixed formatting of GUI, changed how graphs are displayed. Fixed Cbar not disappearing when switching between graphs. Worked on only displaying one graph at once.
 
 ### 0.1.2 (2023-12-08)
-Final Product, fixed formatting of files, change code around, added comments. Fixed RT60 Value
+Fixed formatting of files, change code around, added comments. Fixed RT60 Value
 
-
+### 0.1.3 (2023-12-10)
+Added comments, formatting. This is the final product.
